@@ -12,3 +12,8 @@ export const getProfile = async (): Promise<IProfileResponse> => {
   const res = await axios.post<IProfileResponse>("/user/profile");
   return res.data;
 };
+
+export const changeProfileName = async (): Promise<IProfileResponse> => {
+  const res = await axios.put<IProfileResponse>("/user/profile", { firstName: "Claire", lastName: "Royer" });
+  return res.data;
+};
