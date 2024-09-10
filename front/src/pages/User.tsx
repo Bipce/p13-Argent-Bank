@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { getAccountsData } from "../services/getPublicData.ts";
 import { getProfile } from "../services/apiCalls.ts";
+import { AppDispatch } from "../app/store.ts";
+import { setUser } from "../features/user/userSlice.ts";
 import { IAccount } from "../models/IAccount.ts";
-import { IProfileResponse } from "../models/user/IProfileResponse.ts";
 import Account from "../components/Account.tsx";
 
 interface IUser {
@@ -10,24 +12,35 @@ interface IUser {
   lastName: string;
 }
 
+
 const User = () => {
   const [accounts, setAccounts] = useState<IAccount[]>();
-  const [user, setUser] = useState<IUser>();
+  const [userData, setUserData] = useState<IUser>();
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     (async () => {
-      setUser(profileRequestToDto(await getProfile()));
-      setAccounts(await getAccountsData());
-    })();
-  }, []);
+      try {
+        const data = await getProfile();
+        const { firstName, lastName } = data.body;
 
-  if (!accounts || !user) return null;
+        dispatch(setUser({ firstName, lastName }));
+        setUserData({ firstName, lastName });
+
+        setAccounts(await getAccountsData());
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [dispatch]);
+
+  if (!accounts || !userData) return null;
 
   return (
     <>
       <main className="main bg-dark">
         <div className="header">
-          <h1>Welcome back<br />{user.firstName} {user.lastName}!</h1>
+          <h1>Welcome back<br />{userData.firstName} {userData.lastName}!</h1>
           <button className="edit-button">Edit Name</button>
         </div>
 
@@ -38,15 +51,6 @@ const User = () => {
       </main>
     </>
   );
-};
-
-const profileRequestToDto = (request: IProfileResponse): IUser => {
-  const data = request.body;
-
-  return {
-    firstName: data.firstName,
-    lastName: data.lastName,
-  };
 };
 
 export default User;
