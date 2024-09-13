@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
-import { login } from "../services/apiCalls.ts";
+import { useAppDispatch } from "../app/store.ts";
+import { setAccessToken } from "../features/userSlice.ts";
+import { useLoginMutation } from "../features/apiSlice.ts";
 
 interface ILogin {
   email: string;
@@ -11,6 +13,8 @@ interface ILogin {
 
 const SignIn = () => {
   const [user, setUser] = useState<ILogin>({ email: "", password: "" });
+  const dispatch = useAppDispatch();
+  const [login] = useLoginMutation();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,10 +26,11 @@ const SignIn = () => {
     e.preventDefault();
 
     try {
-      const res = await login(user);
-      const { token } = res.body;
+      const data = await login({ email: user.email, password: user.password }).unwrap();
+      const { token } = data.body;
 
       localStorage.setItem("token", token);
+      dispatch(setAccessToken(token));
 
       navigate("/user");
     } catch (err) {

@@ -1,12 +1,40 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { faUserCircle, faSignIn, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { useAppDispatch, useAppSelector } from "../app/store.ts";
+import { logout, selectUser, setUser, setAccessToken } from "../features/userSlice.ts";
+import { useGetUserProfileMutation } from "../features/apiSlice.ts";
 import logo from "../assets/img/argentBankLogo.png";
-import { useAppSelector } from "../app/store.ts";
-import { selectUser } from "../features/user/userSlice.ts";
 
 const Navbar = () => {
-  const { firstName } = useAppSelector(selectUser);
+  const { firstName, isConnected, accessToken } = useAppSelector(selectUser);
+  const [getUserProfile] = useGetUserProfileMutation();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/");
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      dispatch(setAccessToken(token));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    (async () => {
+      if (accessToken) {
+        const data = await getUserProfile().unwrap();
+        const { firstName, lastName } = data.body;
+        dispatch(setUser({ firstName, lastName }));
+      }
+    })(
+    );
+  }, [accessToken, dispatch, getUserProfile]);
 
   return (
     <nav className="main-nav">
@@ -16,15 +44,25 @@ const Navbar = () => {
       </Link>
 
       <div>
-        <Link className="main-nav-item" to={"/user"}>
-          <FontAwesomeIcon icon={faUserCircle} />
-          {firstName}
-        </Link>
+        {(isConnected) &&
+          <Link className="main-nav-item" to={"/user"}>
+            <FontAwesomeIcon icon={faUserCircle} className="icon" />
+            {firstName}
+          </Link>
+        }
 
-        <Link className="main-nav-item" to={"/sign-in"}>
-          <FontAwesomeIcon icon={faUserCircle} />
-          Sign In
-        </Link>
+        {isConnected
+          ? <>
+            <button className="main-nav-item" onClick={handleLogout}>
+              <FontAwesomeIcon icon={faSignOut} className="icon" />Sign Out
+            </button>
+          </>
+          : <>
+            <Link className="main-nav-item" to={"/sign-in"}>
+              <FontAwesomeIcon icon={faSignIn} className="icon" />Sign In
+            </Link>
+          </>
+        }
       </div>
     </nav>
   );

@@ -45,18 +45,23 @@ body {
     padding: 5px 20px;
 }
 
-.main-nav a {
+.main-nav a,
+.main-nav button {
     font-weight: bold;
     color: #2c3e50;
+    background: none;
+    border: none;
+    font-size: 16px;
 }
 
-.main-nav a.router-link-exact-active {
+.main-nav a.router-link-exact-active,
+.main-nav button.router-link-exact-active {
     color: #42b983;
 }
 
 .main-nav-item {
     text-decoration: none;
-    margin-right: 0.5rem;
+    margin-right: .8rem;
 }
 
 .main-nav-item:hover {
@@ -291,4 +296,8 @@ body {
     .transaction-button {
         width: 200px;
     }
+}
+
+.icon {
+    margin-right: 2px;
 }
