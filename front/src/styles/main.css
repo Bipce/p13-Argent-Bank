@@ -301,3 +301,13 @@ body {
 .icon {
     margin-right: 2px;
 }
+
+.error {
+    color: red;
+    margin-top: 5px;
+}
+
+.error-not-found {
+    color: red;
+    margin-top: 25px;
+}

@@ -2,39 +2,45 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
+import { useForm } from "react-hook-form";
+import { z, ZodType } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch } from "../app/store.ts";
 import { setAccessToken } from "../features/userSlice.ts";
 import { useLoginMutation } from "../features/apiSlice.ts";
 
-interface ILogin {
-  email: string;
-  password: string;
+type FormData = {
+  email: string,
+  password: string
 }
 
 const SignIn = () => {
-  const [user, setUser] = useState<ILogin>({ email: "", password: "" });
+  const [isError, setIsError] = useState(false);
   const dispatch = useAppDispatch();
   const [login] = useLoginMutation();
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
-  };
+  const schema: ZodType<FormData> = z.object({
+    email: z.string().email({ message: "Adresse email invalide" }),
+    password: z.string().min(4, { message: "Le mot de passe doit contenir au moins 4 caractères" }),
+  });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) });
 
+  const submitData = async (data: FormData) => {
     try {
-      const data = await login({ email: user.email, password: user.password }).unwrap();
-      const { token } = data.body;
+      const loginData = await login({ email: data.email, password: data.password }).unwrap();
+      const { token } = loginData.body;
 
       localStorage.setItem("token", token);
       dispatch(setAccessToken(token));
 
       navigate("/user");
-    } catch (err) {
-      console.log(err);
+      setIsError(false);
+    } catch (err: any) {
+      if (err.data.message) {
+        setIsError(true);
+      }
     }
   };
 
@@ -45,15 +51,18 @@ const SignIn = () => {
           <FontAwesomeIcon className="sign-in-icon" icon={faUserCircle} />
           <h1>Sign In</h1>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(submitData)}>
             <div className="input-wrapper">
-              <label htmlFor="username">Username</label>
-              <input type="text" id="email" name="email" value={user.email} onChange={handleChange} />
+              <label htmlFor="email">Username</label>
+              <input type="text" {...register("email")} />
+              {errors.email && <span className="error">{errors.email.message}</span>}
             </div>
 
             <div className="input-wrapper">
               <label htmlFor="password">Password</label>
-              <input type="password" id="password" name="password" value={user.password} onChange={handleChange} />
+              <input type="password" {...register("password")} />
+              {errors.password && <span className="error">{errors.password.message}</span>}
+              {isError && <span className="error-not-found">Cet utilisateur n'existe pas</span>}
             </div>
 
             <div className="input-remember">
