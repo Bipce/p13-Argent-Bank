@@ -21,8 +21,8 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const schema: ZodType<FormData> = z.object({
-    email: z.string().email({ message: "Adresse email invalide" }),
-    password: z.string().min(4, { message: "Le mot de passe doit contenir au moins 4 caractères" }),
+    email: z.string().email({ message: "Invalid address email" }),
+    password: z.string().min(4, { message: "The password has to be 4 characters minimum." }),
   });
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(schema) });

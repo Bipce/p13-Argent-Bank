@@ -302,6 +302,9 @@ body {
     margin-right: 2px;
 }
 
+/*-----------------------------------*/
+/* --------HANDLING ERRORS---------- */
+/*-----------------------------------*/
 .error {
     color: red;
     margin-top: 5px;
@@ -310,4 +313,46 @@ body {
 .error-not-found {
     color: red;
     margin-top: 25px;
+}
+
+/*-----------------------------------*/
+/* ------------EDIT FORM------------ */
+/*-----------------------------------*/
+.editing-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-inline: auto;
+}
+
+.editing-wrapper div {
+    display: flex;
+    flex-direction: column;
+}
+
+.editing-wrapper div input {
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: 2px solid #a1a1a1;
+    margin-inline: 10px;
+    outline-style: none;
+    color: #a1a1a1;
+}
+
+.editing-wrapper button {
+    width: 15%;
+    padding: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    border-color: #00bc77;
+    background-color: #fff;
+    color: #00bc77;
+    margin-inline: 10px;
+}
+
+.editing-error {
+    display: block;
+    margin-inline: 10px;
 }
