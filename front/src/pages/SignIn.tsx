@@ -62,7 +62,7 @@ const SignIn = () => {
               <label htmlFor="password">Password</label>
               <input type="password" {...register("password")} />
               {errors.password && <span className="error">{errors.password.message}</span>}
-              {isError && <span className="error-not-found">Cet utilisateur n'existe pas</span>}
+              {isError && <span className="error-not-found">User not found</span>}
             </div>
 
             <div className="input-remember">

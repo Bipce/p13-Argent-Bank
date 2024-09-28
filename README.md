@@ -26,3 +26,8 @@ Project in 2 parts :
     - User can see all the details of a transaction for the current month, group by account
     - User can see the details of a transaction in the different vue
     - User can add, modify or delete information on a transaction
+
+## Lunch
+
+Download both back and front folders. Old back given by OpenClassRoom, not up to date. If you don't want to make the
+modifications yourself download it through the link in repo.
